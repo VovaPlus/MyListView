@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         mContext = getApplicationContext();
 
         initializeData();
-
+//      Комментарий для GitHub
         //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.day_of_weeks, android.R.layout.simple_list_item_1);
 //        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, myArray);
 //        myArrayList = Arrays.asList(myArray);
