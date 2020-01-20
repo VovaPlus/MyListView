@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String DB_NAME = "myDB";
     private static final int REQUEST_CODE_PERMISSION_READ_CONTACTS = 1;
+    private static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION = 1;
     private SQLiteDatabase myDataBase;
     public Coin[] myArray;
     public ArrayAdapter<Coin> adapter;
@@ -177,11 +178,20 @@ public class MainActivity extends AppCompatActivity {
                 myDataBase = dbOpenHelper.openDataBase();
                 myDataBase.delete("coins",null,null);
 
+                // Получаем разрешение на чтение файла
+                // Check whether this app has write external storage permission or not.
+                int writeExternalStoragePermission = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                // If do not grant write external storage permission.
+                if(writeExternalStoragePermission!= PackageManager.PERMISSION_GRANTED)
+                {
+                    // Request user to grant write external storage permission.
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                }
                 XmlPullParser xpp = null;
                 //InputStream document = readFile();
                 //xpp.setInput(document, null);
                 // Получаем путь к файлу
-                TextView tv = findViewById(R.id.textFilePath);
+                TextView tv = (TextView) findViewById(R.id.textFilePath);
                 String strDirPath = tv.getText().toString();
                 String strFilePath = strDirPath + FILENAME;
 
@@ -394,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
         int permissionStatus = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
         if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
             // Получаем путь к файлу
-            TextView tv = findViewById(R.id.textFilePath);
+            TextView tv = (TextView) findViewById(R.id.textFilePath);
             String strFilePath = tv.getText().toString();
             strFilePath = strFilePath + FILENAME;
             InputStream document = null;
