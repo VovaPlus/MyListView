@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".CoinViewActivity">
 
-    <ImageView
+    <com.person.v_plaunov.mylistview.TouchImageView
         android:id="@+id/coin_pic"
         android:layout_width="0dp"
         android:layout_height="330dp"
@@ -101,7 +101,6 @@
         android:textAlignment="center"
         android:textColor="#471E52"
         android:textStyle="italic"
-        app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coin_year" />

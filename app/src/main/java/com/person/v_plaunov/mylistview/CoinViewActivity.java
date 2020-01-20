@@ -78,7 +78,7 @@ public class CoinViewActivity extends AppCompatActivity {
         try {
             InputStream inputStream = new FileInputStream(coinImagePath);
             Drawable d = Drawable.createFromStream(inputStream, null);
-            ImageView cImg = findViewById(R.id.coin_pic);
+            TouchImageView cImg = (TouchImageView) findViewById(R.id.coin_pic);
             cImg.setImageDrawable(d);
         } catch (IOException e) {
             e.printStackTrace();
