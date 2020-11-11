@@ -37,7 +37,7 @@ public class CoinViewActivity extends AppCompatActivity {
 //        String coinImgName = bundle.getString("coin_img");
 
         // переменные для query
-        String [] columns = {"_id", "Nominal", "State", "Img", "Year", "Description"};
+        String [] columns = {"_id", "Nominal", "State", "Img", "Year", "Theme", "Description"};
         String selection = null;
         String[] selectionArgs = null;
 
@@ -66,6 +66,9 @@ public class CoinViewActivity extends AppCompatActivity {
         String coinYear = cursor.getString(cursor.getColumnIndex("Year"));
         TextView cYear = (TextView)findViewById(R.id.coin_year);
         cYear.setText(coinYear);
+        String coinTheme = cursor.getString(cursor.getColumnIndex("Theme"));
+        TextView cTheme = (TextView)findViewById(R.id.coin_theme);
+        cTheme.setText(coinTheme);
         String coinDescr = cursor.getString(cursor.getColumnIndex("Description"));
         TextView cDescr = (TextView)findViewById(R.id.coin_description);
         cDescr.setText(coinDescr);

@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final ListView lvMain = (ListView)findViewById(R.id.lv);
-        final TextView txt = (TextView)findViewById(R.id.txt);
+//        final TextView txt = (TextView)findViewById(R.id.txt);
         final TextView txtNum = (TextView)findViewById(R.id.textNum);
         inputSearch = (EditText) findViewById(R.id.inputSearch);
         final Context mContext;
@@ -363,7 +363,13 @@ public class MainActivity extends AppCompatActivity {
                         sb.append(");");
 
                         insquery = sb.toString();
-                        myDataBase.execSQL(insquery);
+                        try {
+                            myDataBase.execSQL(insquery);
+                        }
+                        catch (Exception e) {
+                            Toast toast = Toast.makeText(getApplicationContext(),
+                                    "Ошибка!", Toast.LENGTH_SHORT);
+                        }
                         //Log.d("XML", coin.toString());
                     }
                 }
