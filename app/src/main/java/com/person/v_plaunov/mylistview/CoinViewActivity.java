@@ -1,18 +1,15 @@
 package com.person.v_plaunov.mylistview;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,8 +35,8 @@ public class CoinViewActivity extends AppCompatActivity {
 
         // переменные для query
         String [] columns = {"_id", "Nominal", "State", "Img", "Year", "Description"};
-        String selection = null;
-        String[] selectionArgs = null;
+        String selection;
+        String[] selectionArgs;
 
         //coins.clear();
         //Наш ключевой хелпер
@@ -69,6 +66,7 @@ public class CoinViewActivity extends AppCompatActivity {
         String coinDescr = cursor.getString(cursor.getColumnIndex("Description"));
         TextView cDescr = (TextView)findViewById(R.id.coin_description);
         cDescr.setText(coinDescr);
+        cursor.close();
 
         String packageName = this.getPackageName();
         String DB_PATH = String.format(this.getString(R.string.str_db_path), packageName);
