@@ -13,7 +13,7 @@
     <string name="title_activity_coin_v">CoinVActivity</string>
     <string name="coin_image">Coin image</string>
     <string name="str_db_path">"//data//data//%s//databases//"</string>
-    <string name="str_xml_path">"//mnt//sdcard//Download//Num//"</string>
+    <string name="str_xml_path">"//storage//emulated//0//Download//Num//"</string>
     <string name="str_header">Коллекция</string>
     <string name="btn_name_load">Load</string>
     <string name="str_filter_default">Фильтр</string>

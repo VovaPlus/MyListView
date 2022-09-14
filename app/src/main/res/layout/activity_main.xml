@@ -12,7 +12,8 @@
         android:autofillHints=""
         android:hint="@string/str_filter_default"
         android:inputType=""
-        android:textSize="14sp" tools:targetApi="o">
+        android:textSize="14sp"
+        tools:targetApi="o">
 
         <requestFocus />
     </EditText>
@@ -35,7 +36,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:textAlignment="center"
-            android:textSize="14sp" />
+            android:textSize="48sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/textFilePath"
