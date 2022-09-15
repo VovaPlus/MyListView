@@ -1,18 +1,14 @@
 package com.person.v_plaunov.mylistview;
 
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,8 +34,8 @@ public class CoinViewActivity extends AppCompatActivity {
 
         // переменные для query
         String [] columns = {"_id", "Nominal", "State", "Img", "Year", "Theme", "Description"};
-        String selection = null;
-        String[] selectionArgs = null;
+        String selection;
+        String[] selectionArgs;
 
         //coins.clear();
         //Наш ключевой хелпер
@@ -53,25 +49,26 @@ public class CoinViewActivity extends AppCompatActivity {
         Cursor cursor = myDataBase.query("coins", columns, selection, selectionArgs, null, null, null);
         String coinImagePath = "";
         cursor.moveToFirst();
-        String coinState = cursor.getString(cursor.getColumnIndex("State"));
-        TextView cState = (TextView)findViewById(R.id.coin_state);
+        String coinState = cursor.getString(cursor.getColumnIndexOrThrow("State"));
+        TextView cState = findViewById(R.id.coin_state);
         cState.setText(coinState);
 
-        String coinNominal = cursor.getString(cursor.getColumnIndex("Nominal"));
-        TextView cNominal = (TextView)findViewById(R.id.coin_nominal);
+        String coinNominal = cursor.getString(cursor.getColumnIndexOrThrow("Nominal"));
+        TextView cNominal = findViewById(R.id.coin_nominal);
         cNominal.setText(coinNominal);
-        String coinImgName = cursor.getString(cursor.getColumnIndex("Img"));
+        String coinImgName = cursor.getString(cursor.getColumnIndexOrThrow("Img"));
         if (!TextUtils.isEmpty(coinImgName))
             coinImgName = coinImgName.replace("\\", "/");
-        String coinYear = cursor.getString(cursor.getColumnIndex("Year"));
-        TextView cYear = (TextView)findViewById(R.id.coin_year);
+        String coinYear = cursor.getString(cursor.getColumnIndexOrThrow("Year"));
+        TextView cYear = findViewById(R.id.coin_year);
         cYear.setText(coinYear);
-        String coinTheme = cursor.getString(cursor.getColumnIndex("Theme"));
-        TextView cTheme = (TextView)findViewById(R.id.coin_theme);
+        String coinTheme = cursor.getString(cursor.getColumnIndexOrThrow("Theme"));
+        TextView cTheme = findViewById(R.id.coin_theme);
         cTheme.setText(coinTheme);
-        String coinDescr = cursor.getString(cursor.getColumnIndex("Description"));
-        TextView cDescr = (TextView)findViewById(R.id.coin_description);
+        String coinDescr = cursor.getString(cursor.getColumnIndexOrThrow("Description"));
+        TextView cDescr = findViewById(R.id.coin_description);
         cDescr.setText(coinDescr);
+        cursor.close();
 
         String packageName = this.getPackageName();
         String DB_PATH = String.format(this.getString(R.string.str_db_path), packageName);
@@ -81,7 +78,7 @@ public class CoinViewActivity extends AppCompatActivity {
         try {
             InputStream inputStream = new FileInputStream(coinImagePath);
             Drawable d = Drawable.createFromStream(inputStream, null);
-            TouchImageView cImg = (TouchImageView) findViewById(R.id.coin_pic);
+            TouchImageView cImg = findViewById(R.id.coin_pic);
             cImg.setImageDrawable(d);
         } catch (IOException e) {
             e.printStackTrace();
