@@ -16,7 +16,7 @@ class CoinViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_coinview)
         val intent = intent
-        val bundle = intent.extras
+        val bundle = intent!!.extras
         val coinId = bundle!!.getInt("coin_id")
         //        String coinState = bundle.getString("coin_state");
 //        String coinNominal = bundle.getString("coin_nominal");
@@ -36,9 +36,9 @@ class CoinViewActivity : AppCompatActivity() {
 //        Cursor cursor = myDataBase.query("coins", columns, selection, selectionArgs, null, null, null);
         selection = "_id = ?"
         selectionArgs = arrayOf(coinId.toString())
-        val cursor = myDataBase.query("coins", columns, selection, selectionArgs, null, null, null)
+        val cursor = myDataBase?.query("coins", columns, selection, selectionArgs, null, null, null)
         var coinImagePath = ""
-        cursor.moveToFirst()
+        cursor!!.moveToFirst()
         val coinState = cursor.getString(cursor.getColumnIndexOrThrow("State"))
         val cState = findViewById<TextView>(R.id.coin_state)
         cState.text = coinState

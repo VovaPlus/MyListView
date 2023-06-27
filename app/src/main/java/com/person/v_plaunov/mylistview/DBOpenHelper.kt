@@ -110,9 +110,9 @@ class DBOpenHelper(val context: Context, databaseName: String) : SQLiteOpenHelpe
 
     companion object {
         //Путь к папке с базами на устройстве
-        var DB_PATH: String
+        lateinit var DB_PATH: String
 
         //Имя файла с базой
-        var DB_NAME: String
+        lateinit var DB_NAME: String
     }
 }

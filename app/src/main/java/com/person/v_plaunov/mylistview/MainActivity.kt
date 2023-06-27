@@ -27,14 +27,15 @@ import javax.xml.parsers.ParserConfigurationException
 
 class MainActivity : AppCompatActivity() {
     private var myDataBase: SQLiteDatabase? = null
-    var myArray: Array<Coin?>
-    var adapter: ArrayAdapter<Coin>? = null
+    var myArray: Array<out Coin?>? = null
+    var adapter: ArrayAdapter<Coin?>? = null
     val LOG_TAG = "myLogs"
     val FILENAME = "file"
 
     //Поиск EditText
     var inputSearch: EditText? = null
-    var myArrayList = ArrayList<Coin>()
+    var myArrayList = ArrayList<Coin?>()
+    //var myArrayList = MutableCollection<Coin>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.day_of_weeks, android.R.layout.simple_list_item_1);
 //        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, myArray);
 //        myArrayList = Arrays.asList(myArray);
-        Collections.addAll(myArrayList, *myArray)
+        Collections.addAll(myArrayList, *myArray as Array<out Coin?>)
         val Num = myArrayList.size
         val sNum: CharSequence = Num.toString() //.subSequence(0,4);
         txtNum.text = sNum
@@ -75,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                 coinObj = lvMain.getItemAtPosition(position)
                 val coin = coinObj as Coin
                 val objName = coin.javaClass.name
-                val idC = coin.coinId.toInt()
+                val idC = coin.coinId!!.toInt()
                 //Coin coin = new Coin();
                 intent.putExtra("coin_id", idC)
                 //                intent.putExtra("coin_nominal", coins.get(i).nominal);
@@ -86,12 +87,9 @@ class MainActivity : AppCompatActivity() {
         inputSearch!!.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(cs: CharSequence, arg1: Int, arg2: Int, arg3: Int) {
                 //Когда пользователь вводит какой-нибудь текст:
-                if (adapter != null) {
-                    adapter.getFilter().filter(cs.toString())
-                    //                    adapter.notifyDataSetChanged();
-                } else {
-                    Log.d("filter", "no filter available")
-                }
+                adapter?.getFilter()?.filter(cs.toString())
+                //                    adapter.notifyDataSetChanged();
+                    ?: Log.d("filter", "no filter available")
 
                 //MainActivity.this.adapter.getFilter().filter(cs);
             }
@@ -113,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                 //Наш ключевой хелпер
                 val dbOpenHelper = DBOpenHelper(this, DB_NAME)
                 myDataBase = dbOpenHelper.openDataBase()
-                myDataBase.delete("coins", null, null)
+                myDataBase?.delete("coins", null, null)
 
                 // Получаем разрешение на чтение файла
                 // Check whether this app has write external storage permission or not.
@@ -181,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                         var valCoinLoR: String? = null
                         var valCoinDescription: String? = null
                         sb.append("INSERT INTO " + "COINS" + " Values (")
-                        if (!TextUtils.isEmpty(coin.coinId)) {
+                        if (!TextUtils.isEmpty(coin!!.coinId)) {
                             valCoinId = "'" + coin.coinId + "'"
                         }
                         sb.append(valCoinId)
@@ -203,9 +201,9 @@ class MainActivity : AppCompatActivity() {
                             val packageName = this.packageName
                             val DB_PATH =
                                 String.format(this.getString(R.string.str_db_path), packageName)
-                            val destCoinImagePath = DB_PATH + coin.coinImg.replace("\\", "//")
+                            val destCoinImagePath = DB_PATH + coin.coinImg!!.replace("\\", "//")
                             val destFile = File(destCoinImagePath)
-                            val coinImagePath = strDirPath + coin.coinImg.replace("\\", "//")
+                            val coinImagePath = strDirPath + coin.coinImg!!.replace("\\", "//")
                             val sourceFile = File(coinImagePath)
                             try {
                                 copyFile(sourceFile, destFile)
@@ -312,7 +310,7 @@ class MainActivity : AppCompatActivity() {
                         sb.append(");")
                         insquery = sb.toString()
                         try {
-                            myDataBase.execSQL(insquery)
+                            myDataBase?.execSQL(insquery)
                         } catch (e: Exception) {
                             val toast = Toast.makeText(
                                 applicationContext,
@@ -379,9 +377,9 @@ class MainActivity : AppCompatActivity() {
         //Все, база открыта!
 
 //        Cursor cursor = myDataBase.query("coins", columns, selection, selectionArgs, null, null, null);
-        val cursor = myDataBase.query("coins", columns, null, null, null, null, null)
-        val num = cursor.count
-        myArray = arrayOfNulls(num)
+        val cursor = myDataBase?.query("coins", columns, null, null, null, null, null)
+        val num = cursor?.count
+        myArray = arrayOfNulls(num!!)
         var i = 0
         while (cursor.moveToNext()) {
             val _id = cursor.getInt(0)
@@ -394,7 +392,7 @@ class MainActivity : AppCompatActivity() {
 
             //myArray[i] = nominal + " " + state + " " + year;
             val coin = Coin(_id.toString(), nominal, state, year, theme, description)
-            myArray[i] = coin
+            (myArray as Array<Coin?>)[i] = coin
             i = ++i
         }
     }

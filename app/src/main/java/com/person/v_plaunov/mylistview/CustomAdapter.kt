@@ -11,10 +11,10 @@ import android.widget.Filterable
 import android.widget.TextView
 import java.util.*
 
-class CustomAdapter(context: Context, textViewResourceId: Int, data: ArrayList<Coin>) :
+class CustomAdapter(context: Context, textViewResourceId: Int, data: ArrayList<Coin?>) :
     ArrayAdapter<Coin?>(context, textViewResourceId, data), Filterable {
-    private var myArrayList: List<Coin>
-    private val originalArrayList: MutableList<Coin>
+    private var myArrayList: List<Coin?>
+    private val originalArrayList: MutableList<Coin?>
     private var filter: MyFilter? = null
     var lInflater: LayoutInflater? = null
     var mContext: Context
@@ -62,7 +62,7 @@ class CustomAdapter(context: Context, textViewResourceId: Int, data: ArrayList<C
             holder = convertView.tag as ViewHolder
         }
         val coin = myArrayList[position]
-        holder!!.coinNominal!!.text = coin.coinNominal
+        holder!!.coinNominal!!.text = coin!!.coinNominal
         holder.coinState!!.text = coin.coinState
         holder.coinYear!!.text = coin.coinYear
         holder.coinDescription!!.text = coin.coinDescription
@@ -98,7 +98,7 @@ class CustomAdapter(context: Context, textViewResourceId: Int, data: ArrayList<C
                     val coin = originalArrayList[i]
                     if (coin.toString().lowercase(Locale.getDefault())
                             .contains(constraint)
-                    ) filteredList.add(coin)
+                    ) filteredList.add(coin!!)
                     i++
                 }
                 result.values = filteredList

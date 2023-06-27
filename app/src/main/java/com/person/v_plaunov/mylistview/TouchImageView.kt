@@ -68,7 +68,7 @@ class TouchImageView @JvmOverloads constructor(
     private var maxScale = 0f
     private var superMinScale = 0f
     private var superMaxScale = 0f
-    private var m: FloatArray?
+    private var m: FloatArray? = null
     /**
      * Get zoom multiplier for double tap
      *
@@ -513,7 +513,7 @@ class TouchImageView @JvmOverloads constructor(
         }
         val fixTransX = getFixTrans(transX, viewWidth.toFloat(), imageWidth, offset)
         val fixTransY = getFixTrans(transY, viewHeight.toFloat(), imageHeight, 0f)
-        matrix!!.postTranslate(fixTransX, fixTransY)
+        matrix!!.postTranslate(fixTransX as Float, fixTransY as Float)
     }
 
     /**
@@ -544,7 +544,7 @@ class TouchImageView @JvmOverloads constructor(
         viewSize: Float,
         contentSize: Float,
         offset: Float
-    ): Float {
+    ): Any {
         val minTrans: Float
         val maxTrans: Float
         if (contentSize <= viewSize) {
@@ -558,7 +558,7 @@ class TouchImageView @JvmOverloads constructor(
         return if (trans > maxTrans) -trans + maxTrans else 0
     }
 
-    private fun getFixDragTrans(delta: Float, viewSize: Float, contentSize: Float): Float {
+    private fun getFixDragTrans(delta: Float, viewSize: Float, contentSize: Float): Any {
         return if (contentSize <= viewSize) {
             0
         } else delta
@@ -881,23 +881,23 @@ class TouchImageView @JvmOverloads constructor(
             performLongClick()
         }
 
-        override fun onFling(
-            e1: MotionEvent,
-            e2: MotionEvent,
-            velocityX: Float,
-            velocityY: Float
-        ): Boolean {
-            if (fling != null) {
-                //
-                // If a previous fling is still active, it should be cancelled so that two flings
-                // are not run simultaenously.
-                //
-                fling!!.cancelFling()
-            }
-            fling = Fling(velocityX.toInt(), velocityY.toInt())
-            compatPostOnAnimation(fling!!)
-            return super.onFling(e1, e2, velocityX, velocityY)
-        }
+//        override fun onFling(
+//            e1: MotionEvent,
+//            e2: MotionEvent,
+//            velocityX: Float,
+//            velocityY: Float
+//        ): Boolean {
+//            if (fling != null) {
+//                //
+//                // If a previous fling is still active, it should be cancelled so that two flings
+//                // are not run simultaenously.
+//                //
+//                fling!!.cancelFling()
+//            }
+//            fling = Fling(velocityX.toInt(), velocityY.toInt())
+//            compatPostOnAnimation(fling!!)
+//            return super.onFling(e1, e2, velocityX, velocityY)
+//        }
 
         override fun onDoubleTap(e: MotionEvent): Boolean {
             var consumed = false
@@ -938,6 +938,7 @@ class TouchImageView @JvmOverloads constructor(
         // Remember last point position for dragging
         //
         private val last = PointF()
+
         override fun onTouch(v: View, event: MotionEvent): Boolean {
             if (drawable == null) {
                 setState(State.NONE)
@@ -958,7 +959,7 @@ class TouchImageView @JvmOverloads constructor(
                         val deltaY = curr.y - last.y
                         val fixTransX = getFixDragTrans(deltaX, viewWidth.toFloat(), imageWidth)
                         val fixTransY = getFixDragTrans(deltaY, viewHeight.toFloat(), imageHeight)
-                        matrix!!.postTranslate(fixTransX, fixTransY)
+                        matrix!!.postTranslate(fixTransX as Float, fixTransY as Float)
                         fixTrans()
                         last[curr.x] = curr.y
                     }
@@ -1083,6 +1084,7 @@ class TouchImageView @JvmOverloads constructor(
         private val interpolator = AccelerateDecelerateInterpolator()
         private val startTouch: PointF
         private val endTouch: PointF
+        private val ZOOM_TIME = 500f
 
         init {
             setState(State.ANIMATE_ZOOM)
@@ -1141,7 +1143,8 @@ class TouchImageView @JvmOverloads constructor(
          */
         private fun interpolate(): Float {
             val currTime = System.currentTimeMillis()
-            var elapsed = (currTime - startTime) / Companion.ZOOM_TIME
+//            var elapsed = (currTime - startTime) / Companion.ZOOM_TIME
+            var elapsed = (currTime - startTime) / ZOOM_TIME
             elapsed = Math.min(1f, elapsed)
             return interpolator.getInterpolation(elapsed)
         }
@@ -1155,9 +1158,9 @@ class TouchImageView @JvmOverloads constructor(
             return zoom / currentZoom
         }
 
-        companion object {
-            private const val ZOOM_TIME = 500f
-        }
+//        companion object {
+//            private const val ZOOM_TIME = 500f
+//        }
     }
 
     /**
@@ -1262,13 +1265,15 @@ class TouchImageView @JvmOverloads constructor(
             if (touchImageViewListener != null) {
                 touchImageViewListener!!.onMove()
             }
-            if (scroller!!.isFinished()) {
+            if (scroller!!.isFinished) {
                 scroller = null
                 return
             }
             if (scroller!!.computeScrollOffset()) {
-                val newX: Int = scroller.getCurrX()
-                val newY: Int = scroller.getCurrY()
+//                val newX: Int = scroller.getCurrX()
+//                val newY: Int = scroller.getCurrY()
+                val newX: Int = scroller!!.currX
+                val newY: Int = scroller!!.currY
                 val transX = newX - currX
                 val transY = newY - currY
                 currX = newX

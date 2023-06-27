@@ -23,7 +23,7 @@ class Coin(
     var coinPrice: String? = null
     var coinPriceForSale: String? = null
     var coinPriceBuy: String? = null
-    var coinDate: Date? = null
+    @JvmField var coinDate: Date? = null
     var coinSeller: String? = null
     var coinMetal: String? = null
     var coinQuality: String? = null
