@@ -513,7 +513,7 @@ class TouchImageView @JvmOverloads constructor(
         }
         val fixTransX = getFixTrans(transX, viewWidth.toFloat(), imageWidth, offset)
         val fixTransY = getFixTrans(transY, viewHeight.toFloat(), imageHeight, 0f)
-        matrix!!.postTranslate(fixTransX as Float, fixTransY as Float)
+        matrix!!.postTranslate(fixTransX.toString().toFloat(), fixTransY.toString().toFloat())
     }
 
     /**

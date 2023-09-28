@@ -46,7 +46,7 @@ class CoinViewActivity : AppCompatActivity() {
         val cNominal = findViewById<TextView>(R.id.coin_nominal)
         cNominal.text = coinNominal
         var coinImgName = cursor.getString(cursor.getColumnIndexOrThrow("Img"))
-        if (!TextUtils.isEmpty(coinImgName)) coinImgName = coinImgName.replace("\\", "/")
+        if (!TextUtils.isEmpty(coinImgName)) coinImgName = coinImgName.replace("\\", "//")
         val coinYear = cursor.getString(cursor.getColumnIndexOrThrow("Year"))
         val cYear = findViewById<TextView>(R.id.coin_year)
         cYear.text = coinYear
@@ -61,8 +61,12 @@ class CoinViewActivity : AppCompatActivity() {
         val DB_PATH = String.format(this.getString(R.string.str_db_path), packageName)
         if (!TextUtils.isEmpty(coinImgName)) coinImagePath = DB_PATH + coinImgName
         try {
+
             val inputStream: InputStream = FileInputStream(coinImagePath)
-            val d = Drawable.createFromStream(inputStream, null)
+            val num = inputStream.available()
+            //Drawable.createFromStream(inputStream, null)
+            val d = Drawable.createFromPath(coinImagePath)
+
             val cImg = findViewById<TouchImageView>(R.id.coin_pic)
             cImg.setImageDrawable(d)
         } catch (e: IOException) {

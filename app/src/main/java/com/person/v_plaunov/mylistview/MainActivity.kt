@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
+import android.os.Environment
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -24,6 +25,7 @@ import java.nio.channels.FileChannel
 import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
+
 
 class MainActivity : AppCompatActivity() {
     private var myDataBase: SQLiteDatabase? = null
@@ -113,7 +115,7 @@ class MainActivity : AppCompatActivity() {
                 myDataBase = dbOpenHelper.openDataBase()
                 myDataBase?.delete("coins", null, null)
 
-                // Получаем разрешение на чтение файла
+                // Получаем разрешение на запись файла
                 // Check whether this app has write external storage permission or not.
                 val writeExternalStoragePermission = ContextCompat.checkSelfPermission(
                     this@MainActivity,
@@ -133,10 +135,21 @@ class MainActivity : AppCompatActivity() {
                 //xpp.setInput(document, null);
                 // Получаем путь к файлу
                 val tv = findViewById<View>(R.id.textFilePath) as TextView
-                val strDirPath = tv.text.toString()
-                val strFilePath = strDirPath + FILENAME
+                val extStore = Environment.getExternalStorageDirectory()
+                val strDirPath = extStore.absolutePath
+                //val strDirPath = tv.text.toString()
+                var strFilePath = (strDirPath + resources.getString(R.string.str_xml_path) + FILENAME)!!.replace("//", "/")
                 verifyStoragePermissions(this)
                 //XmlPullParser xpp = getResources().getXml(R.xml.products);
+                // Проверим существование каталога is (для изображений монет) в каталоге databases
+                val directoryPath = String.format(this.getString(R.string.str_db_path), packageName) + "is//"
+                val file = File(directoryPath)
+                if (file.isDirectory) {
+                    println("File is a Directory")
+                } else {
+                    println("Directory doesn't exist!!")
+                    file.mkdir()
+                }
                 val parser = CoinFileParser()
                 if (parser.parse(strFilePath)) {
                     for (coin in parser.coins) {
@@ -199,13 +212,17 @@ class MainActivity : AppCompatActivity() {
                             // Скопировать файл с изображением из выгруженного каталога в каталог databases
                             //Составим полный путь к базам для вашего приложения
                             val packageName = this.packageName
-                            val DB_PATH =
-                                String.format(this.getString(R.string.str_db_path), packageName)
+                            val DB_PATH = String.format(this.getString(R.string.str_db_path), packageName)
                             val destCoinImagePath = DB_PATH + coin.coinImg!!.replace("\\", "//")
                             val destFile = File(destCoinImagePath)
-                            val coinImagePath = strDirPath + coin.coinImg!!.replace("\\", "//")
+                            val coinImagePath = strDirPath + this.getString(R.string.str_xml_path) + coin.coinImg!!.replace("\\", "//")
                             val sourceFile = File(coinImagePath)
                             try {
+                                val MY_READ_EXTERNAL_REQUEST : Int = 1
+                                if (checkSelfPermission(
+                                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                                    requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), MY_READ_EXTERNAL_REQUEST)
+                                }
                                 copyFile(sourceFile, destFile)
                             } catch (e: IOException) {
                                 e.printStackTrace()
@@ -432,6 +449,7 @@ class MainActivity : AppCompatActivity() {
          * @param activity
          */
         fun verifyStoragePermissions(activity: Activity?) {
+
             // Check if we have write permission
             val permission = ActivityCompat.checkSelfPermission(
                 activity!!,
