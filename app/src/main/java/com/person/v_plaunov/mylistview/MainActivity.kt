@@ -6,8 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+//import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -15,23 +17,24 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import org.xml.sax.InputSource
+//import androidx.core.content.ContextCompat
+//import org.xml.sax.InputSource
 import org.xmlpull.v1.XmlPullParser
 import java.io.*
 import java.nio.channels.FileChannel
 import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
-
+//private const val TAG = "AUDIO_QUERY"
 
 class MainActivity : AppCompatActivity() {
     private var myDataBase: SQLiteDatabase? = null
     var myArray: Array<out Coin?>? = null
     var adapter: ArrayAdapter<Coin?>? = null
-    val LOG_TAG = "myLogs"
+    //val LOG_TAG = "myLogs"
     val FILENAME = "file"
 
     //Поиск EditText
@@ -74,10 +77,10 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(mContext, CoinViewActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 //                intent.putExtra("coin_id", position + 1);
-                var coinObj = Any()
+                val coinObj: Any
                 coinObj = lvMain.getItemAtPosition(position)
                 val coin = coinObj as Coin
-                val objName = coin.javaClass.name
+                //val objName = coin.javaClass.name
                 val idC = coin.coinId!!.toInt()
                 //Coin coin = new Coin();
                 intent.putExtra("coin_id", idC)
@@ -106,6 +109,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    //@RequiresApi(Build.VERSION_CODES.Q)
     fun onClick(v: View) {
         when (v.id) {
             R.id.button_LoadFile -> {
@@ -115,30 +119,36 @@ class MainActivity : AppCompatActivity() {
                 myDataBase = dbOpenHelper.openDataBase()
                 myDataBase?.delete("coins", null, null)
 
-                // Получаем разрешение на запись файла
-                // Check whether this app has write external storage permission or not.
-                val writeExternalStoragePermission = ContextCompat.checkSelfPermission(
-                    this@MainActivity,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-                // If do not grant write external storage permission.
-                if (writeExternalStoragePermission != PackageManager.PERMISSION_GRANTED) {
-                    // Request user to grant write external storage permission.
-                    ActivityCompat.requestPermissions(
-                        this@MainActivity,
-                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION
-                    )
-                }
-                val xpp: XmlPullParser? = null
+                // 19.10.2023 Изменён механизм получения разрешений на доступ к файловой системе
+                if (!PermissionUtils.hasPermissions(this@MainActivity))
+                    PermissionUtils.requestPermissions(this@MainActivity, PERMISSION_STORAGE)
+
+//                // Получаем разрешение на запись файла
+//                // Check whether this app has write external storage permission or not.
+//                val writeExternalStoragePermission = ContextCompat.checkSelfPermission(
+//                    this@MainActivity,
+//                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                )
+//                // If do not grant write external storage permission.
+//                if (writeExternalStoragePermission != PackageManager.PERMISSION_GRANTED) {
+//                    // Request user to grant write external storage permission.
+//                    ActivityCompat.requestPermissions(
+//                        this@MainActivity,
+//                        arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+//                        REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION
+//                    )
+//                }
+                // 19.10.2023 Изменён механизм получения разрешений на доступ к файловой системе
+
+                //val xpp: XmlPullParser? = null
                 //InputStream document = readFile();
                 //xpp.setInput(document, null);
                 // Получаем путь к файлу
-                val tv = findViewById<View>(R.id.textFilePath) as TextView
+                //val tv = findViewById<View>(R.id.textFilePath) as TextView
                 val extStore = Environment.getExternalStorageDirectory()
                 val strDirPath = extStore.absolutePath
                 //val strDirPath = tv.text.toString()
-                var strFilePath = (strDirPath + resources.getString(R.string.str_xml_path) + FILENAME)!!.replace("//", "/")
+                val strFilePath = (strDirPath + resources.getString(R.string.str_xml_path) + FILENAME).replace("//", "/")
                 verifyStoragePermissions(this)
                 //XmlPullParser xpp = getResources().getXml(R.xml.products);
                 // Проверим существование каталога is (для изображений монет) в каталоге databases
@@ -150,22 +160,52 @@ class MainActivity : AppCompatActivity() {
                     println("Directory doesn't exist!!")
                     file.mkdir()
                 }
+
+//                val projection = arrayOf(
+//                    MediaStore.Downloads.TITLE,
+//                    MediaStore.Downloads.ALBUM
+//                )
+//
+//                val selection = null //not filtering out any row.
+//                val selectionArgs = null //this can be null because selection is also null
+//                val sortOrder = null //sorting order is not needed
+//
+//                applicationContext.contentResolver.query(
+//                    MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+//                    projection,
+//                    selection,
+//                    selectionArgs,
+//                    sortOrder
+//                )?.use { cursor ->
+//
+//                    val titleColIndex = cursor.getColumnIndex(MediaStore.Downloads.TITLE)
+//                    val albumColIndex = cursor.getColumnIndex(MediaStore.Downloads.ALBUM)
+//
+//                    Log.d(TAG, "Query found ${cursor.count} rows")
+//
+//                    while (cursor.moveToNext()) {
+//                        val title = cursor.getString(titleColIndex)
+//                        val album = cursor.getString(albumColIndex)
+//
+//                        Log.d(TAG, "$title - $album")
+//                    }
+//                }
                 val parser = CoinFileParser()
                 if (parser.parse(strFilePath)) {
                     for (coin in parser.coins) {
                         // Загрузить монеты в базу данных sqlite
                         // База уже открыта!
                         // переменные для query
-                        val columns = arrayOf(
-                            "_id",
-                            "Nominal",
-                            "State",
-                            "Img",
-                            "Year",
-                            "Theme",
-                            "Description"
-                        )
-                        var insquery = ""
+//                        val columns = arrayOf(
+//                            "_id",
+//                            "Nominal",
+//                            "State",
+//                            "Img",
+//                            "Year",
+//                            "Theme",
+//                            "Description"
+//                        )
+                        var insquery: String
                         val sb = StringBuilder()
                         // Объявляем переменные для значений для вставки в БД
                         var valCoinId: String? = null
@@ -218,12 +258,15 @@ class MainActivity : AppCompatActivity() {
                             val coinImagePath = strDirPath + this.getString(R.string.str_xml_path) + coin.coinImg!!.replace("\\", "//")
                             val sourceFile = File(coinImagePath)
                             try {
-                                val MY_READ_EXTERNAL_REQUEST : Int = 1
-                                if (checkSelfPermission(
-                                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                                    requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), MY_READ_EXTERNAL_REQUEST)
+//                                val MY_READ_EXTERNAL_REQUEST : Int = 1
+//                                if (checkSelfPermission(
+//                                        Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                                    requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), MY_READ_EXTERNAL_REQUEST)
+//                                }
+                                if (PermissionUtils.hasPermissions(this@MainActivity)) {
+                                    PermissionUtils.requestPermissions(this@MainActivity, PERMISSION_STORAGE)
+                                    copyFile(sourceFile, destFile)
                                 }
-                                copyFile(sourceFile, destFile)
                             } catch (e: IOException) {
                                 e.printStackTrace()
                             }
@@ -333,6 +376,7 @@ class MainActivity : AppCompatActivity() {
                                 applicationContext,
                                 "Ошибка!", Toast.LENGTH_SHORT
                             )
+                            toast.show()
                         }
                         //Log.d("XML", coin.toString());
                     }
@@ -342,6 +386,7 @@ class MainActivity : AppCompatActivity() {
                     "База монет загружена!", Toast.LENGTH_SHORT
                 )
                 toast.show()
+                this.recreate()
             }
         }
     }
@@ -350,19 +395,22 @@ class MainActivity : AppCompatActivity() {
         // открываем поток для чтения
 //            BufferedReader br = new BufferedReader(new InputStreamReader(
 //                    openFileInput(strFilePath)));
-        val permissionStatus =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+//        val permissionStatus =
+//            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//        if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+        PermissionUtils.requestPermissions(this@MainActivity, PERMISSION_STORAGE)
+        if (PermissionUtils.hasPermissions(this@MainActivity)) {
+
             // Получаем путь к файлу
             val tv = findViewById<View>(R.id.textFilePath) as TextView
             var strFilePath = tv.text.toString()
             strFilePath = strFilePath + FILENAME
-            var document: InputStream? = null
+            val document: InputStream?
             val factory = DocumentBuilderFactory.newInstance()
             factory.isNamespaceAware = true
             document = try {
-                val db = factory.newDocumentBuilder()
-                val inputSource = InputSource(FileReader(strFilePath))
+                //val db = factory.newDocumentBuilder()
+                //val inputSource = InputSource(FileReader(strFilePath))
                 FileInputStream(strFilePath) // db.parse(inputSource);
             } catch (e: ParserConfigurationException) {
                 Log.e("Error: ", e.message!!)
@@ -376,10 +424,12 @@ class MainActivity : AppCompatActivity() {
             }
             return document
         } else {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                REQUEST_CODE_PERMISSION_READ_CONTACTS
-            )
+//            ActivityCompat.requestPermissions(
+//                this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+//                REQUEST_CODE_PERMISSION_READ_CONTACTS
+//            )
+            //if (PermissionUtils.hasPermissions(this@MainActivity))
+                PermissionUtils.requestPermissions(this@MainActivity, PERMISSION_STORAGE)
         }
         return null
     }
@@ -402,7 +452,7 @@ class MainActivity : AppCompatActivity() {
             val _id = cursor.getInt(0)
             val nominal = cursor.getString(1)
             val state = cursor.getString(2)
-            val img = cursor.getString(3)
+            //val img = cursor.getString(3)
             val year = cursor.getString(4)
             val theme = cursor.getString(5)
             val description = cursor.getString(6)
@@ -412,6 +462,7 @@ class MainActivity : AppCompatActivity() {
             (myArray as Array<Coin?>)[i] = coin
             i = ++i
         }
+        cursor.close()
     }
 
     @Throws(IOException::class)
@@ -436,9 +487,11 @@ class MainActivity : AppCompatActivity() {
         //private static String DB_PATH = "/storage/self/primary/My Documents/";
         // Storage Permissions
         private const val REQUEST_EXTERNAL_STORAGE = 1
+        private const val PERMISSION_STORAGE = 101
         private val PERMISSIONS_STORAGE = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.MANAGE_EXTERNAL_STORAGE
         )
 
         /**
@@ -466,7 +519,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         private const val DB_NAME = "myDB"
-        private const val REQUEST_CODE_PERMISSION_READ_CONTACTS = 1
-        private const val REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION = 1
+//        private const val REQUEST_CODE_PERMISSION_READ_CONTACTS = 1
+//        private const val REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION = 1
+//        private const val REQUEST_CODE_MANAGE_EXTERNAL_STORAGE_PERMISSION = 1
     }
 }

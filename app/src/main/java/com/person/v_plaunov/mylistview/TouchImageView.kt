@@ -959,7 +959,10 @@ class TouchImageView @JvmOverloads constructor(
                         val deltaY = curr.y - last.y
                         val fixTransX = getFixDragTrans(deltaX, viewWidth.toFloat(), imageWidth)
                         val fixTransY = getFixDragTrans(deltaY, viewHeight.toFloat(), imageHeight)
-                        matrix!!.postTranslate(fixTransX as Float, fixTransY as Float)
+                        matrix!!.postTranslate(
+                            fixTransX.toString().toFloat(),
+                            fixTransY.toString().toFloat()
+                        )
                         fixTrans()
                         last[curr.x] = curr.y
                     }
