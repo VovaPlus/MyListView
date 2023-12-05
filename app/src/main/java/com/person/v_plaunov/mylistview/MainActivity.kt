@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.sqlite.SQLiteDatabase
-import android.os.Build
+//import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 //import android.provider.MediaStore
@@ -17,23 +17,25 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
-import androidx.annotation.RequiresApi
+//import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 //import androidx.core.content.ContextCompat
 //import org.xml.sax.InputSource
-import org.xmlpull.v1.XmlPullParser
+//import org.xmlpull.v1.XmlPullParser
 import java.io.*
 import java.nio.channels.FileChannel
 import java.util.*
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.parsers.ParserConfigurationException
+
 //private const val TAG = "AUDIO_QUERY"
 
 class MainActivity : AppCompatActivity() {
     private var myDataBase: SQLiteDatabase? = null
-    var myArray: Array<out Coin?>? = null
+    private var myArray: Array<out Coin?>? = null
     var adapter: ArrayAdapter<Coin?>? = null
+
     //val LOG_TAG = "myLogs"
     val FILENAME = "file"
 
