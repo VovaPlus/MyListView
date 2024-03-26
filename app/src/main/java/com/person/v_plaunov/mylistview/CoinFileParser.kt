@@ -68,7 +68,7 @@ class CoinFileParser {
                             currentCoin!!.coinDescription = description
                         } else if ("market".equals(tagName, ignoreCase = true)) {
                             val datebuy = xpp.getAttributeValue(null, "datebuy")
-                            var interval = 0
+                            var interval: Int
                             //Date date = fmt.parse(datebuy);
                             if (!TextUtils.isEmpty(datebuy)) {
                                 interval = datebuy.toInt()
