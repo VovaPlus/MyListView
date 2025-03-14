@@ -15,6 +15,8 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -468,5 +470,33 @@ class MainActivity : AppCompatActivity() {
         private const val DB_NAME = "myDB"
         private const val REQUEST_CODE_PERMISSION_READ_CONTACTS = 1
         private const val REQUEST_CODE_WRITE_EXTERNAL_STORAGE_PERMISSION = 1
+    }
+
+    val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // открываем поток на чтение по полученному URI
+            val intent = result.data
+            val myFile = getContentResolver().openInputStream(intent?.data!!)
+            if (myFile != null) {
+
+                // читаем данные
+                val content = myFile.bufferedReader().readText()
+                // демонстрируем имя файла и объем прочитанных данных
+                Toast
+                    .makeText(this, "File %s, Length %d bytes".format(intent?.data!!.path, content.length), Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+    }
+
+    fun onSelectFile(view: View) {
+        // настраиваем фильтры intent
+        val intent = Intent()
+            .setType("*/*")
+            .setAction(Intent.ACTION_GET_CONTENT)
+
+        // запускаем контракт
+        startForResult.launch(intent)
     }
 }

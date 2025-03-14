@@ -20,7 +20,7 @@
     <ListView
         android:id="@+id/lv"
         android:layout_width="fill_parent"
-        android:layout_height="461dp"
+        android:layout_height="398dp"
         android:layout_weight="5" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,8 +53,8 @@
 
         <Button
             android:id="@+id/button_LoadFile"
-            android:layout_width="147dp"
-            android:layout_height="89dp"
+            android:layout_width="143dp"
+            android:layout_height="56dp"
             android:onClick="onClick"
             android:text="@string/btn_name_load"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -62,6 +62,15 @@
             app:layout_constraintHorizontal_bias="0.994"
             app:layout_constraintStart_toEndOf="@+id/textFilePath"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/button_SelectFile"
+            android:layout_width="134dp"
+            android:layout_height="48dp"
+            android:onClick="onSelectFile"
+            android:text="@string/select_file"
+            app:layout_constraintStart_toStartOf="@+id/button_LoadFile"
+            app:layout_constraintTop_toBottomOf="@+id/button_LoadFile" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

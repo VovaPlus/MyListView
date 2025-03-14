@@ -18,4 +18,5 @@
     <string name="str_header">Коллекция</string>
     <string name="btn_name_load">Load</string>
     <string name="str_filter_default">Фильтр</string>
+    <string name="select_file">Select file</string>
 </resources>
